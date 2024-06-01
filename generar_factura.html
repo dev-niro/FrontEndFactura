@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulario</title>
+  <title>Documento Electronico</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
@@ -59,7 +59,7 @@
         data.forEach(cliente => {
           var option = document.createElement('option');
           option.value = cliente.id;
-          option.text = cliente.firstName;
+          option.text = cliente.firstName + ' ' + cliente.lastName;
           clientesSelect.appendChild(option);
         });
       })
@@ -167,6 +167,7 @@
             </head>
             <body>
                 <h1>Boleta de Compra</h1>
+                <h3>Folio: ${datos.id}</h3>
                 <p><strong>Cliente:</strong> ${datos.cliente.firstName} ${datos.cliente.lastName}</p>
                 <table>
                     <thead>
