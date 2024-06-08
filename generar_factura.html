@@ -21,9 +21,9 @@
     <!-- Radio buttons para el tipo de venta -->
     <div class="form-group">
       <label>Tipo de Venta:</label><br>
-      <input type="radio" id="boletaRadio" name="tipoVenta" value="Boleta" required>
+      <input type="radio" id="boletaRadio" name="documento" value="Boleta" required>
       <label for="boletaRadio">Boleta</label><br>
-      <input type="radio" id="facturaRadio" name="tipoVenta" value="Factura" required>
+      <input type="radio" id="facturaRadio" name="documento" value="Factura" required>
       <label for="facturaRadio">Factura</label><br>
     </div>
 
@@ -31,9 +31,9 @@
     <div class="form-group">
       <label>Tipo de Entrega:</label><br>
       <input type="radio" id="retiroRadio" name="tipoEntrega" value="Retiro" onchange="mostrarMensajeEntrega()" required>
-      <label for="retiroRadio">Retiro</label><br>
+      <label for="tipoEntrega">Retiro</label><br>
       <input type="radio" id="despachoRadio" name="tipoEntrega" value="Despacho" onchange="mostrarMensajeEntrega()" required>
-      <label for="despachoRadio">Despacho</label><br>
+      <label for="tipoEntrega">Despacho</label><br>
     </div>
 
     <!-- Mensaje de entrega -->
@@ -60,12 +60,12 @@
 
     <!-- Botones para agregar y eliminar productos -->
     <div class="form-group">
-      <button type="button" class="btn btn-primary" onclick="agregarProducto()">Agregar Producto</button>
-      <button type="button" class="btn btn-danger" onclick="eliminarUltimoProducto()">Eliminar Último Producto</button>
+        <button type="button" class="btn btn-primary" onclick="agregarProducto()">Agregar Producto</button>
+        <button type="button" class="btn btn-danger" onclick="eliminarUltimoProducto()">Eliminar Último Producto</button>
     </div>
 
     <!-- Botón para enviar formulario -->
-    <button type="submit" class="btn btn-success">Enviar</button>
+    <button type="button" class="btn btn-success" onclick="enviarFormulario()">Enviar</button>
   </form>
 </div>
 
@@ -169,16 +169,110 @@
         }
     }
 
-    // Función para validar la cantidad antes de enviar el formulario
-    document.getElementById("formulario").addEventListener("submit", function(event) {
-        var cantidadInput = document.getElementById("cantidadInput");
-        if (cantidadInput.value <= 0) {
-            cantidadInput.classList.add("is-invalid");
-            event.preventDefault(); // Evitar el envío del formulario si la cantidad es cero o negativa
-        } else {
-            cantidadInput.classList.remove("is-invalid");
-        }
+    function enviarFormulario() {
+    var formulario = document.getElementById("formulario");
+    var formData = new FormData(formulario);
+    var producto = formData.getAll("producto[]");
+    var cantidad = formData.getAll("cantidad[]");
+    var data = {
+        client: formData.get("cliente"),
+        documento: formData.get("documento"),
+        tipoEnvio: formData.get("tipoEnvio"),
+        products: []
+    };
+    for (var i = 0; i < producto.length; i++) {
+        var prod = producto[i];
+        var q = cantidad[i];
+        var productObj = {
+            id: prod,
+            quantity: q
+        };
+        data.products.push(productObj);
+    };
+    fetch('http://localhost:5000/api/BE', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        },
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text();
+    })
+    .then(data => {
+        datos = JSON.parse(data)
+        console.log(datos);
+
+        let boletaHtml = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Boleta</title>
+                <style>
+                    body { font-family: Arial, sans-serif; }
+                    table { width: 100%; border-collapse: collapse; }
+                    table, th, td { border: 1px solid black; }
+                    th, td { padding: 8px; text-align: left; }
+                </style>
+            </head>
+            <body>
+                <h1>Boleta de Compra</h1>
+                <h3>Folio: ${datos.id}</h3>
+                <p><strong>Cliente:</strong> ${datos.cliente.firstName} ${datos.cliente.lastName}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre del Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        datos.productos.forEach(producto => {
+            boletaHtml += `
+                        <tr>
+                            <td>${producto.name}</td>
+                            <td>${producto.quantity}</td>
+                            <td>${producto.price}</td>
+                            <td>${producto.price*producto.quantity}</td>
+                        </tr>`;
+        });
+
+        boletaHtml += `
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Total</strong></td>
+                            <td><strong>${datos.total}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </body>
+            </html>`;
+    
+        // Crear un blob con la cadena JSON
+        const blob = new Blob([boletaHtml], { type: 'text/html' });
+
+        // Crear una URL para el blob
+        const url = URL.createObjectURL(blob);
+
+        // Abrir una nueva ventana con la URL del blob
+        window.open(url, '_blank');
+
+    })
+    .catch(error => {
+      console.error('There has been a problem with your fetch operation:', error);
     });
+  }
 </script>
 
 </body>
