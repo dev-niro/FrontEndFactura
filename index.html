@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Documento Electronico</title>
+  <title>Ferremax</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     .centered {
@@ -15,6 +15,10 @@
     body {
         background-color: darkslategrey;
     }
+    a.disabled {
+      pointer-events: none;
+      cursor: default;
+    }
   </style>
 </head>
 <body>
@@ -25,15 +29,15 @@
           <a href="generar_factura.html" class="btn btn-primary btn-block">Generar Factura</a>
         </div>
         <div class="col-md-6">
-          <a href="buscar_boleta.html" class="btn btn-secondary btn-block">Enlace Secundario</a>
+          <a href="buscar_boleta.html" class="btn btn-secondary btn-block">Buscador de Pedidos</a>
         </div>
       </div>
       <div class="row mt-2">
         <div class="col-md-6">
-          <a href="#" class="btn btn-warning btn-block">Enlace de Advertencia</a>
+          <a href="#" class="btn btn-warning btn-block disabled">Enlace de Advertencia</a>
         </div>
         <div class="col-md-6">
-          <a href="#" class="btn btn-danger btn-block">Forbidden</a>
+          <a href="#" class="btn btn-danger btn-block disabled">Forbidden</a>
         </div>
       </div>
     </div>
