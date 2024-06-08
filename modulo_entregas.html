@@ -39,6 +39,7 @@
                   <th>ID</th>
                   <th>ID Venta</th>
                   <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -54,6 +55,7 @@
                   <th>ID</th>
                   <th>ID Venta</th>
                   <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -69,41 +71,66 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
-    window.onload = function() {
-        // Fetch para obtener pedidos pendientes
-        fetch('http://localhost:5001/api/pendientes')
-        .then(response => {
+        window.onload = function() {
+            // Fetch para obtener pedidos pendientes
+            fetch('http://localhost:5001/api/pendientes')
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error('La respuesta de la red no fue correcta');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    var tabla_retiro = document.querySelector('#tabla-retiro tbody');
+                    var tabla_despacho = document.querySelector('#tabla-despacho tbody');
+                    data.entregas_pendientes.forEach(dato => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${dato.id}</td>
+                            <td>${dato.id_orden}</td>
+                            <td>${dato.estado}</td>
+                            <td><a class="btn btn-primary btn-block" onclick="entregarOrden('${dato.id}')">Entregar</a></td>
+                        `;
+                        tabla_retiro.appendChild(row);
+                    });
+                    data.despachos_pendientes.forEach(dato => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${dato.id}</td>
+                            <td>${dato.id_orden}</td>
+                            <td>${dato.estado}</td>
+                            <td><a class="btn btn-primary btn-block" onclick="entregarOrden('${dato.id}')">Entregar</a></td>
+                        `;
+                        tabla_despacho.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        }
+        function entregarOrden(id_entrega) {
+            data = {
+                estado: 'Entregado'
+            }
+            fetch('http://localhost:5001/api/entrega/'+id_entrega, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                method: 'PUT',
+                mode: 'cors',
+                body: JSON.stringify(data)
+            })
+            .then(response => {
                 if (!response.ok) {
-                    throw new Error('La respuesta de la red no fue correcta');
+                    throw new Error('Network response was not ok');
                 }
-                return response.json();
+                return response.text();
             })
             .then(data => {
-                var tabla_retiro = document.querySelector('#tabla-retiro tbody');
-                var tabla_despacho = document.querySelector('#tabla-despacho tbody');
-                data.entregas_pendientes.forEach(dato => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${dato.id}</td>
-                        <td>${dato.id_orden}</td>
-                        <td>${dato.estado}</td>
-                    `;
-                    tabla_retiro.appendChild(row);
-                });
-                data.despachos_pendientes.forEach(dato => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${dato.id}</td>
-                        <td>${dato.id_orden}</td>
-                        <td>${dato.estado}</td>
-                    `;
-                    tabla_despacho.appendChild(row);
-                });
+                console.log(data)
             })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-    }
+        }
   </script>
 </body>
 </html>
