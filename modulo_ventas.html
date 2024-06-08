@@ -83,6 +83,10 @@
   </form>
 </div>
 
+<div id="popup" style="display: none;">
+    <div id="mensaje-popup" class="alert alert-success" role="alert"></div>
+</div>
+
 <!-- Bootstrap JS (jQuery debe ser incluido antes de Bootstrap JS) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -229,6 +233,22 @@
             console.error('There has been a problem with your fetch operation:', error);
         });
     }
+
+    function mostrarPopup(mensaje) {
+    // Mostrar el popup
+    var popup = document.getElementById('popup');
+    var mensajePopup = document.getElementById('mensaje-popup');
+    mensajePopup.innerText = mensaje;
+    popup.style.display = 'block';
+
+    // Ocultar el popup después de 5 segundos
+    setTimeout(function() {
+        popup.style.display = 'none';
+        // Recargar la página después de 5 segundos
+        location.reload();
+    }, 5000); // 5000 milisegundos = 5 segundos
+    }
+
 </script>
 
 </body>
