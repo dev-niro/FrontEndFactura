@@ -21,6 +21,11 @@
   </style>
 </head>
 <body>
+<a href="index.html" class="btn btn-info">volver</a>
+
+<div id="popup" style="display: none;">
+    <div id="mensaje-popup" class="alert alert-success" role="alert"></div>
+</div>
 
 <div class="container mt-5">
   <h2>Venta</h2>
@@ -81,10 +86,6 @@
     <!-- Botón para enviar formulario -->
     <button type="button" class="btn btn-success" onclick="enviarFormulario()">Enviar</button>
   </form>
-</div>
-
-<div id="popup" style="display: none;">
-    <div id="mensaje-popup" class="alert alert-success" role="alert"></div>
 </div>
 
 <!-- Bootstrap JS (jQuery debe ser incluido antes de Bootstrap JS) -->
@@ -201,6 +202,11 @@
             products: []
         };
         // VALIDAR CON UN IF SI ES MENOR A 1 LA CANTIDAD
+        if (cantidad.some(c => parseInt(c) < 1)) {
+            alert("La cantidad debe ser mayor que cero.");
+            return;
+        }
+
         for (var i = 0; i < producto.length; i++) {
             var prod = producto[i];
             var q = cantidad[i];
@@ -270,11 +276,10 @@
             popup.style.display = 'none';
             // Recargar la página después de 5 segundos
             location.reload();
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 4000); // 5000 milisegundos = 5 segundos
     }
 
 </script>
 
 </body>
 </html>
-
