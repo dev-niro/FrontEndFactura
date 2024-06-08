@@ -96,7 +96,7 @@
         fetch('http://localhost:27776/api/cliente')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('La respuesta de la red no fue correcta');
                 }
                 return response.json();
             })
@@ -118,7 +118,7 @@
         fetch('http://localhost:27776/api/producto')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('La respuesta de la red no fue correcta');
                 }
                 return response.json();
             })
@@ -135,7 +135,7 @@
                 });
             })
             .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
+                console.error('Ha habido un problema con su operación de recuperación:', error);
             });
     };
 
@@ -184,75 +184,51 @@
     }
 
     function enviarFormulario() {
-        var formulario = document.getElementById("formulario");
-        var formData = new FormData(formulario);
-        var producto = formData.getAll("producto[]");
-        var cantidad = formData.getAll("cantidad[]");
-        var documento = formData.get("documento");
-        var tipoEnvio = formData.get("tipoEnvio");
-        // VALIDAR QUE DOCUMENO y TIPOENVIO NO ESTEN VACIOS
-        var data = {
-            client: formData.get("cliente"),
-            documento: formData.get("documento"),
-            products: []
+    var formulario = document.getElementById("formulario");
+    var formData = new FormData(formulario);
+    var producto = formData.getAll("producto[]");
+    var cantidad = formData.getAll("cantidad[]");
+    var documento = formData.get("documento");
+    var tipoEnvio = formData.get("tipoEnvio");
+    // VALIDAR QUE DOCUMENO y TIPOENVIO NO ESTEN VACIOS
+    var data = {
+        client: formData.get("cliente"),
+        documento: formData.get("documento"),
+        products: []
+    };
+    // VALIDAR CON UN IF SI ES MENOR A 1 LA CANTIDAD
+    for (var i = 0; i < producto.length; i++) {
+        var prod = producto[i];
+        var q = cantidad[i];
+        var productObj = {
+            id: prod,
+            quantity: q
         };
-        // VALIDAR CON UN IF SI ES MENOR A 1 LA CANTIDAD
-        for (var i = 0; i < producto.length; i++) {
-            var prod = producto[i];
-            var q = cantidad[i];
-            var productObj = {
-                id: prod,
-                quantity: q
-            };
-            data.products.push(productObj);
-        };
-        fetch('http://localhost:5000/api/BE', {
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-            },
-            method: 'POST',
-            mode: 'cors',
-            body: JSON.stringify(data)
-        })
-        .then(response => {
+        data.products.push(productObj);
+    };
+    fetch('http://localhost:5000/api/BE', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        },
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(data)
+    })
+    .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.text();
-        })
-        .then(data => {
-            datos = JSON.parse(data)
-            console.log(datos);
-            entrega = {
-                documento: datos.documento,
-                tipo_envio: tipoEnvio,
-                id: datos.id
-            }
-            fetch('http://localhost:5001/api/entrega', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                },
-                method: 'POST',
-                mode: 'cors',
-                body: JSON.stringify(entrega)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(data => {
-                //Aca debe saltar un pop up que diga que la venta se genero con exito y a los 5 segundos debe recargarse la pagina.
-            });
-
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-        });
-    }
+    })
+    .then(data => {
+        //Aca debe saltar un pop up que diga que la venta se genero con exito y a los 5 segundos debe recargarse la pagina.
+        mostrarPopup('¡La venta se generó con éxito!');
+    })
+    .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+    });
+}
 </script>
 
 </body>
