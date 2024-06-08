@@ -1,0 +1,59 @@
+let boletaHtml = `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Boleta</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        table { width: 100%; border-collapse: collapse; }
+                        table, th, td { border: 1px solid black; }
+                        th, td { padding: 8px; text-align: left; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Boleta de Compra</h1>
+                    <h3>Folio: ${datos.id}</h3>
+                    <p><strong>Cliente:</strong> ${datos.cliente.firstName} ${datos.cliente.lastName}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre del Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            datos.productos.forEach(producto => {
+                boletaHtml += `
+                            <tr>
+                                <td>${producto.name}</td>
+                                <td>${producto.quantity}</td>
+                                <td>${producto.price}</td>
+                                <td>${producto.price*producto.quantity}</td>
+                            </tr>`;
+            });
+
+            boletaHtml += `
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Total</strong></td>
+                                <td><strong>${datos.total}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </body>
+                </html>`;
+        
+            // Crear un blob con la cadena JSON
+            const blob = new Blob([boletaHtml], { type: 'text/html' });
+
+            // Crear una URL para el blob
+            const url = URL.createObjectURL(blob);
+
+            // Abrir una nueva ventana con la URL del blob
+            window.open(url, '_blank');

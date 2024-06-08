@@ -188,10 +188,13 @@
         var formData = new FormData(formulario);
         var producto = formData.getAll("producto[]");
         var cantidad = formData.getAll("cantidad[]");
+        var documento = formData.get("documento");
+        var tipoEnvio = formData.get("tipoEnvio");
+        // HACER FOR QUE RECORRA TODOS LOS CANTIDAD Y QUE VALIDA CON UN IF SI ES MENOR A 1
+        // VALIDAR QUE DOCUMENO y TIPOENVIO NO ESTEN VACIOS
         var data = {
             client: formData.get("cliente"),
             documento: formData.get("documento"),
-            tipoEnvio: formData.get("tipoEnvio"),
             products: []
         };
         for (var i = 0; i < producto.length; i++) {
@@ -223,7 +226,7 @@
             console.log(datos);
             entrega = {
                 documento: datos.documento,
-                tipo_envio: datos.tipo_envio,
+                tipo_envio: tipoEnvio,
                 id: datos.id
             }
             fetch('http://localhost:5001/api/entrega', {
