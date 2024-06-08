@@ -226,8 +226,32 @@
             return response.text();
         })
         .then(data => {
-            //Aca debe saltar un pop up que diga que la venta se genero con exito y a los 5 segundos debe recargarse la pagina.
-            mostrarPopup('¡La venta se generó con éxito!');
+            datos = JSON.parse(data)
+            console.log(datos);
+            entrega = {
+                documento: datos.documento,
+                tipo_envio: tipoEnvio,
+                id_orden: datos.id
+            }
+            fetch('http://localhost:5001/api/entregas', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                method: 'POST',
+                mode: 'cors',
+                body: JSON.stringify(entrega)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                //Aca debe saltar un pop up que diga que la venta se genero con exito y a los 5 segundos debe recargarse la pagina.
+                mostrarPopup('¡La venta se generó con éxito!');
+            });
         })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error);
@@ -235,18 +259,18 @@
     }
 
     function mostrarPopup(mensaje) {
-    // Mostrar el popup
-    var popup = document.getElementById('popup');
-    var mensajePopup = document.getElementById('mensaje-popup');
-    mensajePopup.innerText = mensaje;
-    popup.style.display = 'block';
+        // Mostrar el popup
+        var popup = document.getElementById('popup');
+        var mensajePopup = document.getElementById('mensaje-popup');
+        mensajePopup.innerText = mensaje;
+        popup.style.display = 'block';
 
-    // Ocultar el popup después de 5 segundos
-    setTimeout(function() {
-        popup.style.display = 'none';
-        // Recargar la página después de 5 segundos
-        location.reload();
-    }, 5000); // 5000 milisegundos = 5 segundos
+        // Ocultar el popup después de 5 segundos
+        setTimeout(function() {
+            popup.style.display = 'none';
+            // Recargar la página después de 5 segundos
+            location.reload();
+        }, 5000); // 5000 milisegundos = 5 segundos
     }
 
 </script>
