@@ -11,6 +11,13 @@
       background-color: darkslategrey;
       color: whitesmoke;
     }
+    .label_radio{
+        padding-right: 10px;
+    }
+    .text_delivery{
+        display: none;
+        color: white;
+    }
   </style>
 </head>
 <body>
@@ -19,25 +26,32 @@
   <h2>Venta</h2>
   <form id="formulario">
     <!-- Radio buttons para el tipo de venta -->
-    <div class="form-group">
-      <label>Tipo de Venta:</label><br>
-      <input type="radio" id="boletaRadio" name="documento" value="Boleta" required>
-      <label for="boletaRadio">Boleta</label><br>
-      <input type="radio" id="facturaRadio" name="documento" value="Factura" required>
-      <label for="facturaRadio">Factura</label><br>
-    </div>
-
-    <!-- Radio buttons para el tipo de entrega -->
-    <div class="form-group">
-      <label>Tipo de Entrega:</label><br>
-      <input type="radio" id="retiroRadio" name="tipoEntrega" value="Retiro" onchange="mostrarMensajeEntrega()" required>
-      <label for="tipoEntrega">Retiro</label><br>
-      <input type="radio" id="despachoRadio" name="tipoEntrega" value="Despacho" onchange="mostrarMensajeEntrega()" required>
-      <label for="tipoEntrega">Despacho</label><br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Tipo de Venta:</label><br>
+                    <input type="radio" id="boletaRadio" name="documento" value="Boleta" required>
+                    <label class="label_radio" for="boletaRadio">Boleta</label>
+                    <input type="radio" id="facturaRadio" name="documento" value="Factura" required>
+                    <label class="label_radio" for="facturaRadio">Factura</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Radio buttons para el tipo de entrega -->
+                <div class="form-group">
+                    <label>Tipo de Entrega:</label><br>
+                    <input type="radio" id="retiroRadio" name="tipoEntrega" value="Retiro" onchange="mostrarMensajeEntrega()" required>
+                    <label class="label_radio" for="tipoEntrega">Retiro</label>
+                    <input type="radio" id="despachoRadio" name="tipoEntrega" value="Despacho" onchange="mostrarMensajeEntrega()" required>
+                    <label class="label_radio" for="tipoEntrega">Despacho</label>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Mensaje de entrega -->
-    <div id="mensajeEntrega" style="display: none; color: white;"></div>
+    <div id="mensajeEntrega" class="text_delivery"></div>
 
     <!-- Select para seleccionar cliente -->
     <div class="form-group">
@@ -170,109 +184,72 @@
     }
 
     function enviarFormulario() {
-    var formulario = document.getElementById("formulario");
-    var formData = new FormData(formulario);
-    var producto = formData.getAll("producto[]");
-    var cantidad = formData.getAll("cantidad[]");
-    var data = {
-        client: formData.get("cliente"),
-        documento: formData.get("documento"),
-        tipoEnvio: formData.get("tipoEnvio"),
-        products: []
-    };
-    for (var i = 0; i < producto.length; i++) {
-        var prod = producto[i];
-        var q = cantidad[i];
-        var productObj = {
-            id: prod,
-            quantity: q
+        var formulario = document.getElementById("formulario");
+        var formData = new FormData(formulario);
+        var producto = formData.getAll("producto[]");
+        var cantidad = formData.getAll("cantidad[]");
+        var data = {
+            client: formData.get("cliente"),
+            documento: formData.get("documento"),
+            tipoEnvio: formData.get("tipoEnvio"),
+            products: []
         };
-        data.products.push(productObj);
-    };
-    fetch('http://localhost:5000/api/BE', {
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-        },
-        method: 'POST',
-        mode: 'cors',
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.text();
-    })
-    .then(data => {
-        datos = JSON.parse(data)
-        console.log(datos);
+        for (var i = 0; i < producto.length; i++) {
+            var prod = producto[i];
+            var q = cantidad[i];
+            var productObj = {
+                id: prod,
+                quantity: q
+            };
+            data.products.push(productObj);
+        };
+        fetch('http://localhost:5000/api/BE', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+        })
+        .then(data => {
+            datos = JSON.parse(data)
+            console.log(datos);
+            entrega = {
+                documento: datos.documento,
+                tipo_envio: datos.tipo_envio,
+                id: datos.id
+            }
+            fetch('http://localhost:5001/api/entrega', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                method: 'POST',
+                mode: 'cors',
+                body: JSON.stringify(entrega)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
 
-        let boletaHtml = `
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Boleta</title>
-                <style>
-                    body { font-family: Arial, sans-serif; }
-                    table { width: 100%; border-collapse: collapse; }
-                    table, th, td { border: 1px solid black; }
-                    th, td { padding: 8px; text-align: left; }
-                </style>
-            </head>
-            <body>
-                <h1>Boleta de Compra</h1>
-                <h3>Folio: ${datos.id}</h3>
-                <p><strong>Cliente:</strong> ${datos.cliente.firstName} ${datos.cliente.lastName}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nombre del Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+            });
 
-        datos.productos.forEach(producto => {
-            boletaHtml += `
-                        <tr>
-                            <td>${producto.name}</td>
-                            <td>${producto.quantity}</td>
-                            <td>${producto.price}</td>
-                            <td>${producto.price*producto.quantity}</td>
-                        </tr>`;
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
         });
-
-        boletaHtml += `
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3"><strong>Total</strong></td>
-                            <td><strong>${datos.total}</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </body>
-            </html>`;
-    
-        // Crear un blob con la cadena JSON
-        const blob = new Blob([boletaHtml], { type: 'text/html' });
-
-        // Crear una URL para el blob
-        const url = URL.createObjectURL(blob);
-
-        // Abrir una nueva ventana con la URL del blob
-        window.open(url, '_blank');
-
-    })
-    .catch(error => {
-      console.error('There has been a problem with your fetch operation:', error);
-    });
-  }
+    }
 </script>
 
 </body>
