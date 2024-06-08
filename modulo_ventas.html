@@ -190,13 +190,13 @@
         var cantidad = formData.getAll("cantidad[]");
         var documento = formData.get("documento");
         var tipoEnvio = formData.get("tipoEnvio");
-        // HACER FOR QUE RECORRA TODOS LOS CANTIDAD Y QUE VALIDA CON UN IF SI ES MENOR A 1
         // VALIDAR QUE DOCUMENO y TIPOENVIO NO ESTEN VACIOS
         var data = {
             client: formData.get("cliente"),
             documento: formData.get("documento"),
             products: []
         };
+        // VALIDAR CON UN IF SI ES MENOR A 1 LA CANTIDAD
         for (var i = 0; i < producto.length; i++) {
             var prod = producto[i];
             var q = cantidad[i];
@@ -245,7 +245,7 @@
                 return response.text();
             })
             .then(data => {
-
+                //Aca debe saltar un pop up que diga que la venta se genero con exito y a los 5 segundos debe recargarse la pagina.
             });
 
         })
