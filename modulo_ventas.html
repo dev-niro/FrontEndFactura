@@ -214,8 +214,8 @@
             documento: formData.get("documento"),
             products: []
         };
-        if (cantidad.some(c => parseInt(c) < 1)) {
-            alert("La cantidad debe ser mayor que cero.");
+        if (cantidad.some(c => Number(c) < 1)) {
+            alert("La cantidad de los productos debe ser mayor que cero.");
             return;
         }
         for (var i = 0; i < producto.length; i++) {
@@ -250,7 +250,7 @@
         .then(data => {
             datos = JSON.parse(data)
             if (datos.message !== undefined){
-                alert("¡Stock insuficiente para uno o más productos!");
+                alert(datos.message);
                 return;
             }
             console.log(datos);
