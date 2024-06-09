@@ -1,10 +1,9 @@
-##Clientes
 curl --location 'http://localhost:27776/api/cliente' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "Id": 1,
     "Rut": "20.900.351-1",
-    "FirstName":"Nicolás",
+    "FirstName":"Nicolas",
     "LastName":"Moya Escobar",
     "Email":"n.moyae@duocuc.cl",
     "Address": "Manio 6425, La Granja"
@@ -29,7 +28,6 @@ curl --location 'http://localhost:27776/api/cliente' \
     "Email":"pgomeza@gmail.com",
     "Address": "Lord Cochrane 1400, Santiago"
 }'
-##Productos
 curl --location 'http://localhost:27776/api/producto' \
 --header 'Content-Type: application/json' \
 --data '{

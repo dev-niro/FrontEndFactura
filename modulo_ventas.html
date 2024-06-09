@@ -108,6 +108,10 @@
         })
         .then(data => {
             console.log('Datos de los clientes:', data);
+            if (data === undefined || data.length == 0) {
+                alert("Error al traer los clientes, contactese con el equipo de TI.");
+                return;
+            }
             var clientesSelect = document.getElementById('cliente');
             data.forEach(cliente => {
                 var option = document.createElement('option');
@@ -129,7 +133,10 @@
         })
         .then(data => {
             console.log('Datos de los productos:', data);
-
+            if (data === undefined || data.length == 0) {
+                alert("Error al traer los productos, contactese con el equipo de TI.");
+                return;
+            }
             var productosSelect = document.getElementById('producto');
             data.forEach(prod => {
                 var option = document.createElement('option');
@@ -176,7 +183,6 @@
     function mostrarMensajeEntrega() {
         var tipoEntrega = document.querySelector('input[name="tipoEntrega"]:checked').value;
         var mensajeEntrega = document.getElementById('mensajeEntrega');
-
         if (tipoEntrega === 'Despacho') {
             mensajeEntrega.innerText = 'El despacho puede tardar de 3 a 5 días hábiles.';
             mensajeEntrega.style.display = "block";
@@ -221,6 +227,14 @@
             };
             data.products.push(productObj);
         };
+        if (!data.client) {
+            alert("Por favor, seleccione un cliente.");
+            return;
+        }
+        if (data.products === undefined || data.products.length == 0) {
+            alert("No se puede procesar la orden sin productos.");
+            return;
+        }
         fetch('http://localhost:5000/api/BE', {
             headers: {
                 'Content-Type': 'application/json',
