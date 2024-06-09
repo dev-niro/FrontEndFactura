@@ -227,6 +227,7 @@
             body: JSON.stringify(data)
         })
         .then(response => {
+            // SI LA RESPUESTA ES ERRONEA O NO HAY STOCK DE PRODUCTO DEBE VALIDARLO
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
