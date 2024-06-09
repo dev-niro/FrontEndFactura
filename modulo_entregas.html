@@ -91,7 +91,7 @@
                             <td>${dato.id}</td>
                             <td>${dato.id_orden}</td>
                             <td>${dato.estado}</td>
-                            <td><a class="btn btn-primary btn-block" onclick="entregarOrden('${dato.id}')">Entregar</a></td>
+                            <td><a class="btn btn-primary btn-block" onclick="confirmarEntrega('${dato.id}')">Entregar</a></td>
                         `;
                         tabla_retiro.appendChild(row);
                     });
@@ -101,22 +101,27 @@
                             <td>${dato.id}</td>
                             <td>${dato.id_orden}</td>
                             <td>${dato.estado}</td>
-                            <td><a class="btn btn-primary btn-block" onclick="entregarOrden('${dato.id}')">Entregar</a></td>
+                            <td><a class="btn btn-primary btn-block" onclick="confirmarEntrega('${dato.id}')">Entregar</a></td>
                         `;
                         tabla_despacho.appendChild(row);
                     });
                 })
                 .catch(error => {
-                  // MENSAJE EN INGLES DEBE CAMBIAR A ESPAÑOL
-                    console.error('There has been a problem with your fetch operation:', error);
+                    console.error('Ha habido un problema con su operación de recuperación:', error);
                 });
         }
-        function entregarOrden(id_entrega) {
-          // BOTON DE CONFIRMACION (ES DECIR TIENE QUE APRETAR, SI ESTOY DE ACUERDO CON PROSEGUIR)  
-          data = {
-                estado: 'Entregado'
+        
+        function confirmarEntrega(id_entrega) {
+            if (confirm("¿Está de acuerdo en marcar esta orden como entregada?")) {
+                entregarOrden(id_entrega);
             }
-            fetch('http://localhost:5001/api/entrega/'+id_entrega, {
+        }
+
+        function entregarOrden(id_entrega) {
+            const data = {
+                estado: 'Entregado'
+            };
+            fetch('http://localhost:5001/api/entrega/' + id_entrega, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*',
@@ -132,9 +137,13 @@
                 return response.text();
             })
             .then(data => {
-              // ACA DEBE HABER UN REFRESH DE PAGINA Y EL MENSAJE DE EXITO
-              console.log(data)
+                alert('La orden ha sido marcada como entregada exitosamente.');
+                location.reload();  // Recargar la página para actualizar la tabla
             })
+            .catch(error => {
+                console.error('Error al actualizar la orden:', error);
+                alert('Hubo un problema al marcar la orden como entregada.');
+            });
         }
   </script>
 </body>

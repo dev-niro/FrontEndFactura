@@ -196,13 +196,24 @@
         var cantidad = formData.getAll("cantidad[]");
         var documento = formData.get("documento");
         var tipoEnvio = formData.get("tipoEntrega");
-        // VALIDAR QUE DOCUMENO y TIPOENVIO NO ESTEN VACIOS
+
+        
+        if (!documento) {
+            alert("Por favor, seleccione el tipo de venta.");
+            return;
+        }
+
+        if (!tipoEnvio) {
+            alert("Por favor, seleccione el tipo de entrega.");
+            return;
+        }
+
         var data = {
             client: formData.get("cliente"),
             documento: formData.get("documento"),
             products: []
         };
-        // VALIDAR CON UN IF SI ES MENOR A 1 LA CANTIDAD
+        
         if (cantidad.some(c => parseInt(c) < 1)) {
             alert("La cantidad debe ser mayor que cero.");
             return;
@@ -217,6 +228,7 @@
             };
             data.products.push(productObj);
         };
+
         fetch('http://localhost:5000/api/BE', {
             headers: {
                 'Content-Type': 'application/json',
@@ -227,40 +239,40 @@
             body: JSON.stringify(data)
         })
         .then(response => {
-            // SI LA RESPUESTA ES ERRONEA O NO HAY STOCK DE PRODUCTO DEBE VALIDARLO
+            
+            return response.text();
+        })
+        .then(data => {
+            datos = JSON.parse(data)
+            if (datos.message !== undefined){
+                alert("¡Stock insuficiente para uno o más productos!");
+                return;
+            }
+        console.log(datos);
+        entrega = {
+            documento: datos.documento,
+            tipo_envio: tipoEnvio,
+            id_orden: datos.id
+        }
+        fetch('http://localhost:5001/api/entregas', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify(entrega)
+        })
+        .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.text();
         })
         .then(data => {
-            datos = JSON.parse(data)
-            console.log(datos);
-            entrega = {
-                documento: datos.documento,
-                tipo_envio: tipoEnvio,
-                id_orden: datos.id
-            }
-            fetch('http://localhost:5001/api/entregas', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                },
-                method: 'POST',
-                mode: 'cors',
-                body: JSON.stringify(entrega)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(data => {
-                //Aca debe saltar un pop up que diga que la venta se genero con exito y a los 5 segundos debe recargarse la pagina.
-                mostrarPopup('¡La venta se generó con éxito!');
-            });
-        })
+            mostrarPopup('¡La venta se generó con éxito!');
+        });
+    })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error);
         });
@@ -278,7 +290,7 @@
             popup.style.display = 'none';
             // Recargar la página después de 5 segundos
             location.reload();
-        }, 4000); // 5000 milisegundos = 5 segundos
+        }, 4000); // 5000 milisegundos = 4 segundos
     }
 
 </script>
