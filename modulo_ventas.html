@@ -99,7 +99,7 @@
 
     window.onload = function() {
         // Fetch para obtener clientes
-        fetch('http://localhost:27776/api/cliente')
+        fetch('https://ferremas-resources.azurewebsites.net/api/cliente')
         .then(response => {
             if (!response.ok) {
                 throw new Error('La respuesta de la red no fue correcta');
@@ -124,7 +124,7 @@
             console.error('There has been a problem with your fetch operation:', error);
         });
         // Fetch para obtener productos
-        fetch('http://localhost:27776/api/producto')
+        fetch('https://ferremas-resources.azurewebsites.net/api/producto')
         .then(response => {
             if (!response.ok) {
                 throw new Error('La respuesta de la red no fue correcta');
